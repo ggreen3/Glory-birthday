@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday Glory 🎂</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Sacramento&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #fff8fb;
+      --card:#ffffff;
+      --accent:#ff6fa3;
+      --accent-2:#6f7cff;
+      --muted:#6b6b6b;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 8px 30px rgba(12,12,24,0.08);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{background:linear-gradient(180deg,var(--bg),#f0f6ff);color:#111;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:28px;gap:12px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:70px;height:70px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:28px;font-family:Sacramento}
+    h1{margin:0;font-size:28px}
+    .sub{color:var(--muted);font-size:14px}
+
+    .container{max-width:1100px;margin:18px auto;padding:20px}
+    .hero{background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));border-radius:18px;padding:28px;display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:center;box-shadow:var(--shadow)}
+    .hero-left h2{font-family:Sacramento;font-size:44px;margin:0}
+    .hero-left p{color:var(--muted);margin-top:8px}
+    .cta{margin-top:18px;display:flex;gap:12px}
+    .btn{background:var(--accent);border:none;padding:12px 16px;border-radius:12px;color:white;font-weight:600;cursor:pointer;box-shadow:0 8px 18px rgba(111,111,111,0.08)}
+    .btn.alt{background:transparent;color:var(--accent);border:2px solid rgba(255,111,163,0.14)}
+
+    .video-grid{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+    .video-card{background:var(--card);border-radius:14px;padding:10px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+    .video-thumb{width:100%;height:170px;border-radius:10px;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
+    .video-thumb video{width:100%;height:100%;object-fit:cover}
+    .video-meta{display:flex;justify-content:space-between;align-items:center}
+
+    .poems-panel{background:linear-gradient(180deg,#fff,#fff8ff);padding:14px;border-radius:12px;box-shadow:var(--shadow);max-height:560px;overflow:auto}
+    .poems-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .poem-btn{background:transparent;border:1px dashed rgba(0,0,0,0.06);padding:10px;border-radius:10px;cursor:pointer;text-align:left}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* modal */
+    .modal-back{position:fixed;inset:0;background:rgba(8,10,18,0.45);display:none;align-items:center;justify-content:center;z-index:40}
+    .modal{background:white;border-radius:14px;padding:18px;max-width:900px;width:96%;max-height:92vh;overflow:auto;box-shadow:0 30px 60px rgba(12,12,24,0.35)}
+    .modal .close{float:right;cursor:pointer}
+
+    /* poem viewer */
+    .poem-view{white-space:pre-wrap;font-size:16px;color:#222;background:linear-gradient(180deg,#fff,#fff9f4);padding:18px;border-radius:10px}
+
+    /* responsive */
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}.poems-grid{grid-template-columns:repeat(2,1fr)}.video-grid{grid-template-columns:1fr}}
+    @media (max-width:520px){.poems-grid{grid-template-columns:1fr}}
+
+    /* playful confetti canvas */
+    #confetti{position:fixed;left:0;top:0;pointer-events:none;z-index:30}
+
+    .small-muted{font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<header>
+  <div class="brand">
+    <div class="logo">G</div>
+    <div>
+      <h1>Happy Birthday, Glory</h1>
+      <div class="sub">A thoughtful micro-site made with ♥ — press play and enjoy the surprises</div>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <div class="small-muted">Made by your secret admirer</div>
+    <div style="margin-top:8px"><button class="btn" id="openAll">Play surprise</button></div>
+  </div>
+</header>
+
+<div class="container">
+  <section class="hero">
+    <div class="hero-left">
+      <h2>To Glory — radiant, brave, and utterly loved</h2>
+      <p>I've packed memories, wishes and little poems here — each one written with care. Click a poem, watch a video, or press "Surprise" to start the video sequence.</p>
+      <div class="cta">
+        <button class="btn" id="surpriseBtn">Open surprise playlist</button>
+        <button class="btn alt" id="poemRandom">Show a random poem</button>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='84' height='84'><rect rx='18' width='100%' height='100%' fill='%23ffd9ec'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-size='34' fill='%23ff6fa3' font-family='Montserrat'>G</text></svg>" alt="G" style="border-radius:12px;box-shadow:var(--shadow);">
+        <div>
+          <div style="font-weight:700">Glory</div>
+          <div class="small-muted">May this day be the start of everything beautiful.</div>
+        </div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="poems-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center"><strong>30 Poems for Glory</strong><div class="small-muted">Click to open · Download available</div></div>
+        <div class="controls">
+          <input id="poemSearch" placeholder="Search poem text or title" style="flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06)">
+          <button class="btn alt" id="downloadAll">Download all</button>
+        </div>
+        <div class="poems-grid" id="poemsGrid" style="margin-top:12px"></div>
+      </div>
+    </aside>
+  </section>
+
+  <section style="margin-top:20px;display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start">
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><h3 style="margin:0">Video Gallery</h3><div class="small-muted">Four special clips</div></div>
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-thumb" data-video="video1.mp4"><video muted loop playsinline preload="metadata" src="video1.mp4"></video></div>
+          <div class="video-meta"><div><strong>Memories — Part I</strong><div class="small-muted">A gentle hello</div></div><div><button class="btn" onclick="openVideo('video1.mp4')">Play</button></div></div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb" data-video="video2.mp4"><video muted loop playsinline preload="metadata" src="video2.mp4"></video></div>
+          <div class="video-meta"><div><strong>Laughs & Coffee</strong><div class="small-muted">Warm and bright</div></div><div><button class="btn" onclick="openVideo('video2.mp4')">Play</button></div></div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb" data-video="video3.mp4"><video muted loop playsinline preload="metadata" src="video3.mp4"></video></div>
+          <div class="video-meta"><div><strong>Sunset Promise</strong><div class="small-muted">Soft piano background</div></div><div><button class="btn" onclick="openVideo('video3.mp4')">Play</button></div></div>
+        </div>
+        <div class="video-card">
+          <div class="video-thumb" data-video="video4.mp4"><video muted loop playsinline preload="metadata" src="video4.mp4"></video></div>
+          <div class="video-meta"><div><strong>Make a Wish</strong><div class="small-muted">Blow out the candles</div></div><div><button class="btn" onclick="openVideo('video4.mp4')">Play</button></div></div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;color:var(--muted);font-size:13px">Notes: Replace <code>video1.mp4</code> ... <code>video4.mp4</code> in the same folder with your MP4 files. To play them smoothly, host the site on a simple HTTP server (eg. <code>python -m http.server</code>), or upload to GitHub Pages.</div>
+    </div>
+
+    <aside>
+      <div class="video-card" style="padding:16px;">
+        <strong>Playlist</strong>
+        <p class="small-muted">Use the playlist to play videos in sequence or loop.</p>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn" id="playPlaylist">Play</button>
+          <button class="btn alt" id="stopPlaylist">Stop</button>
+        </div>
+        <div style="margin-top:12px">
+          <label class="small-muted">Volume</label>
+          <input type="range" id="volRange" min="0" max="1" step="0.05" value="0.9" style="width:100%">
+        </div>
+      </div>
+
+      <div style="height:10px"></div>
+      <div class="video-card">
+        <strong>Little extras</strong>
+        <p class="small-muted">Gift: click the heart to reveal a short dedication.</p>
+        <div style="margin-top:8px"><button class="btn" id="showDedication">❤ Dedication</button></div>
+      </div>
+    </aside>
+  </section>
+
+  <footer>
+    <div>If you want me to customize the poems, rearrange videos, or add background music, say the word — I'll update it.</div>
+  </footer>
+</div>
+
+<!-- modal container -->
+<div class="modal-back" id="modalBack">
+  <div class="modal" id="modalContent">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 id="modalTitle"> </h3><div class="close" id="modalClose">✕</div></div>
+    <div id="modalBody" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<script>
+// --- Poem data (30 thoughtful short poems) ---
+const poems = [
+  {title:'Dawn of You', text:`Glory, morning blooms because you smiled
+A small sun rising in your hands
+I count the gentle ways you make the world kinder
+Stay — and let me keep counting.`},
+  {title:'Quiet Harbor', text:`Your laugh is a lighthouse
+I steer toward it in storms
+Even the fiercest seas soften
+When they hear your name.`},
+  {title:'Pocket Full of Stars', text:`I keep your grin in my pocket
+A constellation for lonely nights
+When I stumble, I reach —
+Your light finds my footing.`},
+  {title:'Wish on a Cup', text:`I poured my hope into a cup of tea
+Each sip remembered how you move
+Like slow music, like a soft truth
+Tonight I drink to you.`},
+  {title:'On Your Birthday', text:`Candles gather like tiny wishes
+One by one they grow brave and bright
+Blow — watch the dark scatter
+We sew new mornings with the flame.`},
+  {title:'Small Brave Things', text:`You fix strength into small things: a joke,
+a careful word, the way you listen
+Those tiny brave things build a home.`},
+  {title:'Cartography', text:`If I map the places I adore
+Your name would crisscross the paper
+Rivers of your kindness, mountains of your patience.`},
+  {title:'Handwritten', text:`I keep a note folded in my wallet
+Words that do not demand answer
+They simply sit there and glow.`},
+  {title:'Sunset Grammar', text:`You speak in colors I recognize
+Orange verbs, blue nouns —
+Your sentences change the day.`},
+  {title:'First Snow', text:`The world hushes to meet you
+I watch powder soft the noise
+And wish to be quiet enough to belong.`},
+  {title:'Quiet Courage', text:`You move like somebody who has learned to carry
+Light and shadow both, without apology
+You are brightness tempered by truth.`},
+  {title:'Promise', text:`I promise to keep your laughter safe
+Like a fragile bird in cupped hands
+To let it go only when it sings.`},
+  {title:'Night Train', text:`In the slow dark of a passing train
+I think of all our unwritten routes
+And how you would be a stop I never miss.`},
+  {title:'Little Architect', text:`You build careful worlds out of ordinary days
+A small kindness here, a stubborn smile there
+Soon a city stands where once was dust.`},
+  {title:'Velvet', text:`Your voice is velvet for my rough edges
+I press closer and softer becomes possible
+We patch the torn places together.`},
+  {title:'Recipe', text:`One cup of silly, two of fierce belief
+A dash of stubborn tender mercies
+Stir; serve warm. Keeps forever.`},
+  {title:'Compass', text:`If lost, I fold your name and read it
+A simple north, a steady hand
+It sets my step straight again.`},
+  {title:'Lightfoot', text:`You move through rooms like good weather
+Everyone remembers when you left
+Warmth lingers on couches and coffee cups.`},
+  {title:'Paper Boats', text:`We launched promises in folded boats
+They sailed and did not sink
+Because you steered them with steady hands.`},
+  {title:'Small Victory', text:`You celebrated the tiny wins out loud
+I learned to cheer for quiet growth
+Now every small victory feels enormous.`},
+  {title:'Maple', text:`Your kindness stains like autumn leaves
+I gather them like currency
+Rich and unexpected.`},
+  {title:'Thread', text:`We stitch laughter into the mundane fabric
+Then wear it proudly on ordinary days
+Your presence fits like a favorite sweater.`},
+  {title:'Lantern', text:`When paths go dark you light the way
+Not with blaze but with patient glow
+Leading without asking for maps.`},
+  {title:'Slow Dance', text:`No music needed — just the hum of us
+A gentle orbit, hands agreeing
+The room shrinks to our steady step.`},
+  {title:'Seeds', text:`You plant words and they sprout kindness
+I water them with clumsy faith
+Together, quiet forests grow.`},
+  {title:'Envelope', text:`I send you small letters folded with care
+They look ordinary, but carry storms of meaning
+Open them when you need to be found.`},
+  {title:'Cup of Stars', text:`We drank a sky in a single cup
+Night tasted like possibility
+And your smile sealed the rim.`},
+  {title:'If', text:`If the world forgets how to be gentle
+I will keep a ledger of your soft deeds
+And read them aloud like prayers.`},
+  {title:'Unlocked', text:`You are the key I did not know I needed
+Not to open doors, but to recognize rooms
+Suddenly, home felt possible.`},
+  {title:'Afterglow', text:`Even after you are gone from sight
+The place you were glows longer
+I carry that warmth like a shirt.`}
+];
+
+// --- UI wiring ---
+const poemsGrid = document.getElementById('poemsGrid');
+const modalBack = document.getElementById('modalBack');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+const modalClose = document.getElementById('modalClose');
+const poemSearch = document.getElementById('poemSearch');
+
+function buildPoems(filter=''){
+  poemsGrid.innerHTML='';
+  poems.forEach((p,i)=>{
+    if(filter && !(p.title.toLowerCase()+p.text.toLowerCase()).includes(filter.toLowerCase())) return;
+    const btn = document.createElement('button');
+    btn.className='poem-btn';
+    btn.innerHTML = `<div style="font-weight:600">${i+1}. ${p.title}</div><div class=\"small-muted\">${p.text.split('\n')[0].slice(0,60)}...</div>`;
+    btn.onclick = ()=> openPoem(i);
+    poemsGrid.appendChild(btn);
+  });
+}
+
+function openPoem(i){
+  const p = poems[i];
+  modalTitle.textContent = `${p.title}`;
+  modalBody.innerHTML = `<div class="poem-view">${escapeHtml(p.text)}</div><div style="margin-top:12px;display:flex;gap:8px"><button class=\"btn\" id=\"dlPoem\">Download</button><button class=\"btn alt\" id=\"nextPoem\">Next</button></div>`;
+  document.getElementById('dlPoem').onclick = ()=> downloadText(`${p.title}.txt`, p.text);
+  document.getElementById('nextPoem').onclick = ()=>{
+    const next = (i+1) % poems.length; openPoem(next);
+  }
+  openModal();
+}
+
+function openModal(){modalBack.style.display='flex';}
+function closeModal(){modalBack.style.display='none';}
+modalClose.onclick = closeModal;
+modalBack.onclick = (e)=>{ if(e.target===modalBack) closeModal(); }
+
+poemSearch.addEventListener('input',(e)=> buildPoems(e.target.value));
+
+function downloadText(filename, text){
+  const blob = new Blob([text],{type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+document.getElementById('downloadAll').onclick = ()=>{
+  const combined = poems.map((p,i)=>`${i+1}. ${p.title}\n\n${p.text}\n\n---\n\n`).join('');
+  downloadText('Glory_Poems.txt', combined);
+}
+
+document.getElementById('poemRandom').onclick = ()=>{ const i = Math.floor(Math.random()*poems.length); openPoem(i); }
+
+// --- Video modal & playlist ---
+function openVideo(src){
+  modalTitle.textContent = 'Video Player';
+  modalBody.innerHTML = `<video id=\"player\" controls autoplay style=\"width:100%;max-height:70vh;border-radius:8px\"><source src=\"${src}\" type=\"video/mp4\">Your browser doesn't support the video tag.</video>`;
+  openModal();
+}
+
+let playlist = ['video1.mp4','video2.mp4','video3.mp4','video4.mp4'];
+let plIndex = 0; let plPlaying = false; let plPlayer=null;
+
+function playPlaylist(){
+  if(plPlaying) return;
+  plPlaying = true; plIndex=0;
+  modalTitle.textContent='Playlist — playing';
+  modalBody.innerHTML = `<video id=\"playerPl\" controls autoplay style=\"width:100%;max-height:70vh;border-radius:8px\"><source src=\"${playlist[0]}\" type=\"video/mp4\">Your browser doesn't support the video tag.</video>`;
+  openModal();
+  plPlayer = document.getElementById('playerPl');
+  plPlayer.volume = Number(document.getElementById('volRange').value);
+  plPlayer.onended = ()=>{ plIndex++; if(plIndex<playlist.length){ plPlayer.src = playlist[plIndex]; plPlayer.play(); } else { plIndex=0; if(plPlaying){ plPlayer.src = playlist[0]; plPlayer.play(); } }};
+}
+
+function stopPlaylist(){ plPlaying=false; if(plPlayer){ plPlayer.pause(); plPlayer.currentTime=0; } closeModal(); }
+
+document.getElementById('playPlaylist').onclick = playPlaylist;
+document.getElementById('stopPlaylist').onclick = stopPlaylist;
+document.getElementById('volRange').addEventListener('input',()=>{ if(plPlayer) plPlayer.volume = Number(document.getElementById('volRange').value); });
+
+document.getElementById('surpriseBtn').onclick = ()=>{ document.getElementById('openAll').click(); playPlaylist(); }
+
+document.getElementById('openAll').onclick = ()=>{ playPlaylist(); }
+
+document.getElementById('showDedication').onclick = ()=>{
+  modalTitle.textContent = 'A small dedication';
+  modalBody.innerHTML = `<div class=\"poem-view\">Glory — on this day, I hope you feel brave, seen and wildly celebrated. If I could, I'd gift you every quiet joy. — Always.</div>`;
+  openModal();
+}
+
+// --- confetti (lightweight) ---
+const confettiCanvas = document.getElementById('confetti');
+const ctx = confettiCanvas.getContext('2d');
+let W = confettiCanvas.width = innerWidth; let H = confettiCanvas.height = innerHeight;
+window.addEventListener('resize',()=>{ W=confettiCanvas.width=innerWidth; H=confettiCanvas.height=innerHeight; });
+const pieces = [];
+function rand(min,max){return Math.random()*(max-min)+min}
+function spawnConfetti(count=80){ for(let i=0;i<count;i++){ pieces.push({x:rand(0,W),y:rand(-H,0),vx:rand(-0.6,0.6),vy:rand(1,3),r:rand(6,12),c:["#ff6fa3","#ffd166","#6f7cff","#6ae7c7"][Math.floor(rand(0,4))]}) } }
+function update(){ ctx.clearRect(0,0,W,H); for(let p of pieces){ p.x+=p.vx; p.y+=p.vy; p.vy += 0.02; ctx.fillStyle=p.c; ctx.beginPath(); ctx.ellipse(p.x,p.y,p.r,p.r*0.6, 0,0,Math.PI*2); ctx.fill(); }
+ for(let i=pieces.length-1;i>=0;i--){ if(pieces[i].y>H+30) pieces.splice(i,1); }
+ requestAnimationFrame(update);
+}
+spawnConfetti(100); update();
+
+// --- small util ---
+function escapeHtml(s){ return s.replace(/\n/g,'<br>'); }
+
+// --- initialize UI ---
+buildPoems();
+
+// --- small friendly note in console for you ---
+console.log('Birthday site loaded — replace video1.mp4 .. video4.mp4 with your MP4 files in same folder.');
+</script>
+</body>
+</html>
